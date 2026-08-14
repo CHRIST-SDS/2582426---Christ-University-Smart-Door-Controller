@@ -1,7 +1,5 @@
 streamlit
-ollama
-diffusers
-transformers
-torch
-accelerate
+pandas
+streamlit-autorefresh
 pillow
+requests
