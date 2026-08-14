@@ -2,12 +2,15 @@ import streamlit as st
 import pandas as pd
 from PIL import Image
 from datetime import datetime
+import pytz
+from streamlit_autorefresh import st_autorefresh
 
 # ---------------------------------------------------------
 # 1. PAGE CONFIGURATION & THEME STYLING
 # ---------------------------------------------------------
 st.set_page_config(
     page_title="AI Smart Gate Controller",
+    page_icon="🚪",
     layout="wide"
 )
 
@@ -40,11 +43,18 @@ st.markdown("""
         margin-bottom: 20px;
     }
     
-    .date-display {
-        font-size: 1.8rem;
+    /* Metric / Clock Display */
+    .clock-display {
+        font-size: 2.8rem;
         font-weight: bold;
         color: #77abb7;
-        margin-top: 10px;
+        margin: 5px 0;
+    }
+    
+    .date-display {
+        font-size: 1.1rem;
+        color: #e0e1dd;
+        opacity: 0.8;
     }
 
     /* Table styling - Clean transparent look */
@@ -55,34 +65,48 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ---------------------------------------------------------
-# 2. DATE CALCULATION
+# 2. AUTO-REFRESH & LIVE IST TIME
 # ---------------------------------------------------------
-current_date_str = datetime.now().strftime("%A, %B %d, %Y")
+# Auto-refresh app every 1 second (1000ms) for real-time clock and status updates
+st_autorefresh(interval=1000, key="gate_clock_refresh")
+
+# Fetch current time in IST
+ist = pytz.timezone('Asia/Kolkata')
+now = datetime.now(ist)
+
+current_time_str = now.strftime("%I:%M:%S %p")
+current_date_str = now.strftime("%A, %b %d, %Y")
 
 # ---------------------------------------------------------
 # 3. HEADER & CONTROL PANEL
 # ---------------------------------------------------------
-st.title("Campus Smart Gate Controller")
+st.title("🚪 Campus Smart Gate Controller")
 st.markdown("---")
 
-col_info, col_status = st.columns([1, 1])
+col_time, col_status = st.columns([1, 1])
 
-with col_info:
+with col_time:
     st.markdown(f"""
         <div class="status-card">
             <h3>Campus Control Panel</h3>
-            <p style="margin-bottom: 0px; opacity: 0.7;">System Date</p>
+            <p style="margin-bottom: 0px; opacity: 0.7;">Live System Time (IST)</p>
+            <div class="clock-display">{current_time_str}</div>
             <div class="date-display">{current_date_str}</div>
         </div>
     """, unsafe_allow_html=True)
 
-# Operational status flag
-is_gate_open = True
+# Determine Gate Status based on 10-minute class window logic (Example: 09:00 - 09:10 AM)
+# Adjust hour/minute conditions as per your campus schedule rules
+current_minute = now.minute
+current_hour = now.hour
+
+# Example Logic: Open for first 10 minutes of the hour, restricted afterwards
+is_gate_open = current_minute <= 10
 
 with col_status:
     status_title = "GATE OPEN" if is_gate_open else "RESTRICTED ACCESS"
     status_color = "#2a9d8f" if is_gate_open else "#e76f51"
-    status_desc = "Normal Entry Active" if is_gate_open else "AI Policy Applied"
+    status_desc = "Normal Entry Window Active" if is_gate_open else "Late Entry — AI Policy Applied"
 
     st.markdown(f"""
         <div class="status-card" style="border-left: 6px solid {status_color};">
@@ -97,12 +121,12 @@ with col_status:
 # ---------------------------------------------------------
 # 4. POLICY & LOGS SECTION
 # ---------------------------------------------------------
-st.markdown("### Access Policies and Log View")
+st.markdown("### 📋 Access Policies & Log View")
 
 policy_data = {
     "Rule ID": ["POL-01", "POL-02", "POL-03"],
-    "Condition": ["On Time Entry", "Grace Period Entry", "Late Entry"],
-    "Action": ["Automated Unlatch", "Log Reason and Notify", "Security Approval Required"],
+    "Condition": ["On Time (0-10 mins)", "Grace Period (10-15 mins)", "Late Entry (>15 mins)"],
+    "Action": ["Automated Unlatch", "Log Reason & Notify", "Security Approval Required"],
     "Priority": ["Normal", "Medium", "High"]
 }
 
