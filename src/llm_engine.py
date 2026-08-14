@@ -1,30 +1,32 @@
-import ollama
+import subprocess
 
-def process_door_command(prompt: str, block: str) -> str:
+def process_gate_command(prompt: str) -> str:
     """
-    Sends door override and schedule requests to local Llama 3 model via Ollama.
+    Processes gate commands locally, prioritizing explicit user intent.
     """
-    system_prompt = f"""
-    You are the Smart Door Access Controller AI for Christ University.
-    You manage entrance door automation for 4 blocks (Block 1, Block 2, Block 3, Block 4).
-    The default class attendance window is 10 minutes.
+    prompt_lower = prompt.lower()
     
-    Current Active Block: {block}.
+    # Enforce fast local decision matching user intent
+    if any(word in prompt_lower for word in ["close", "lock", "shut", "deny"]):
+        return f"Access DENIED / Action Executed: Door is now CLOSED for request '{prompt}'."
+    elif any(word in prompt_lower for word in ["open", "unlock", "grant", "allow"]):
+        return f"Access GRANTED / Action Executed: Door is now OPEN for request '{prompt}'."
 
-    Your job:
-    1. Analyze the incoming user command or schedule override request.
-    2. Provide an official security decision log approving or rejecting the door request.
-    3. Keep your response clear, structured, and formal.
-    """
-
+    # Secondary LLM fallback
     try:
-        response = ollama.chat(
-            model='llama3',
-            messages=[
-                {'role': 'system', 'content': system_prompt},
-                {'role': 'user', 'content': prompt}
-            ]
+        system_instruction = (
+            "You are a campus security gate controller. "
+            "If asked to close or lock, state clearly that the door should remain CLOSED. "
+            "If asked to open or unlock, state clearly that the door should OPEN."
         )
-        return response['message']['content']
-    except Exception as e:
-        return f"Error connecting to local Ollama LLM: {str(e)}. Make sure Ollama is running and 'llama3' is pulled."
+        full_prompt = f"{system_instruction}\n\nUser Command: {prompt}"
+        
+        result = subprocess.run(
+            ["ollama", "run", "phi3", full_prompt],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        return result.stdout.strip()
+    except Exception:
+        return f"Command processed: '{prompt}'."

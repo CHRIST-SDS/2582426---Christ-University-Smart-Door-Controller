@@ -1,0 +1,7 @@
+streamlit
+ollama
+diffusers
+transformers
+torch
+accelerate
+pillow
