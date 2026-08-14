@@ -39,11 +39,30 @@ The AI Smart Door Controller solves this by integrating a Streamlit-based contro
 
 ## Architecture Diagram
 
+flowchart TD
+    A[User / Security Admin] -->|Interacts with Web UI| B[Streamlit Dashboard\napp.py]
+    
+    subgraph Core Engines
+        B -->|Queries Timetable Rules| C[Schedule & Policy Module\n10-Min Gate Logic]
+        B -->|Passes Prompts & Visuals| D[AI Engines\nllm_engine.py & image_engine.py]
+    end
+
+    C -->|Determines Door State| E{Access Granted?}
+    D -->|Visual / Text Insights| E
+
+    E -->|Yes: Door Unlocked| F[Update Dashboard Display]
+    E -->|No: Gate Locked| F
+
+    F -->|Log Activity & Render Assets| G[Data & Output Layer\nGate Logs, Media Assets, Demo Outputs]
+    
 
 
 ## Screenshots
 
 <img width="1897" height="737" alt="image" src="https://github.com/user-attachments/assets/5912cda5-1c2e-4629-abed-8a51f86c8911" />
+
+<img width="1911" height="727" alt="Screenshot 2026-08-14 213446" src="https://github.com/user-attachments/assets/815788f2-956b-43bc-a0af-4c404dd29ef6" />
+
 
 
 ---
@@ -54,8 +73,17 @@ The AI Smart Door Controller solves this by integrating a Streamlit-based contro
 * Python 3.10 or higher
 * Git installed on your system
 
-### 1. Clone the Repository
+1. Clone the Repository
 ```bash
 git clone [https://github.com/CHRIST-SDS/2582426---Christ-University-Smart-Door-Controller.git](https://github.com/CHRIST-SDS/2582426---Christ-University-Smart-Door-Controller.git)
 cd 2582426---Christ-University-Smart-Door-Controller
-![AI Smart Door Controller Demo](demo/demo.gif)
+
+2. Set Up Virtual Environment
+
+# Create virtual environment
+python -m venv venv
+
+# Activate virtual environment (Windows PowerShell)
+.\venv\Scripts\Activate.ps1
+
+
