@@ -5,13 +5,6 @@ from datetime import datetime
 from src.llm_engine import process_gate_command
 from src.image_engine import get_door_image
 
-# Auto-refresh every 10 seconds for real-time synchronization
-try:
-    from streamlit_autorefresh import st_autorefresh
-    st_autorefresh(interval=10000, key="datarefresh")
-except ImportError:
-    pass
-
 # Page configuration
 st.set_page_config(
     page_title="Christ University Smart Door Controller",
@@ -93,7 +86,7 @@ st.markdown("""
         box-shadow: 0 6px 16px rgba(0, 49, 83, 0.12);
     }
 
-    /* Keep inner/nested alignment columns transparent (removes red-circled side boxes) */
+    /* Keep inner/nested alignment columns transparent */
     div[data-testid="stColumn"] div[data-testid="stColumn"] {
         background-color: transparent !important;
         padding: 0px !important;
@@ -224,15 +217,14 @@ if "block_statuses" not in st.session_state:
     }
 
 # ==========================================
-# SIDEBAR: Live Time & Block Cards
+# SIDEBAR: Date & Block Cards
 # ==========================================
 with st.sidebar:
     st.title("Campus Control Panel")
     
-    # Real-Time Clock Display
+    # Real-Time Date Display
     now = datetime.now()
-    st.metric("Live System Time", now.strftime("%I:%M:%S %p"))
-    st.caption(f"Date: {now.strftime('%A, %b %d, %Y')}")
+    st.caption(f"System Date: {now.strftime('%A, %b %d, %Y')}")
     st.markdown("---")
     
     st.subheader("Live Gate Status")
