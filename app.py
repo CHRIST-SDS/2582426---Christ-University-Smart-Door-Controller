@@ -5,13 +5,6 @@ from datetime import datetime
 from src.llm_engine import process_gate_command
 from src.image_engine import get_door_image
 
-# Auto-refresh every 10 seconds for real-time synchronization
-try:
-    from streamlit_autorefresh import st_autorefresh
-    st_autorefresh(interval=10000, key="datarefresh")
-except ImportError:
-    pass
-
 # Page configuration
 st.set_page_config(
     page_title="Christ University Smart Door Controller",
@@ -224,15 +217,14 @@ if "block_statuses" not in st.session_state:
     }
 
 # ==========================================
-# SIDEBAR: Live Time & Block Cards
+# SIDEBAR: Date & Block Cards
 # ==========================================
 with st.sidebar:
     st.title("Campus Control Panel")
     
-    # Real-Time Clock Display
+    # Real-Time Date Display
     now = datetime.now()
-    st.metric("Live System Time", now.strftime("%I:%M:%S %p"))
-    st.caption(f"Date: {now.strftime('%A, %b %d, %Y')}")
+    st.caption(f"System Date: {now.strftime('%A, %b %d, %Y')}")
     st.markdown("---")
     
     st.subheader("Live Gate Status")
@@ -333,7 +325,7 @@ schedule_rows = [
     ("11:00 AM - 12:00 PM", "Period 3 (Class)", "Locked 11:00 - 11:10"),
     ("12:00 PM - 01:00 PM", "Lunch Break (1h)", "Open Access"),
     ("01:00 PM - 02:00 PM", "Period 4 (Class)", "Locked 01:00 - 01:10"),
-    ("02:30 PM - 02:30 PM", "Evening Break (30m)", "Open Access"),
+    ("02:00 PM - 02:30 PM", "Evening Break (30m)", "Open Access"),
     ("02:30 PM - 03:30 PM", "Period 5 (Class)", "Locked 02:30 - 02:40"),
     ("03:30 PM - 04:30 PM", "Period 6 (Class)", "Locked 03:30 - 03:40"),
 ]
