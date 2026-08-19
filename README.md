@@ -85,6 +85,31 @@ streamlit run app.py
 
 ---
 
+## **Repository Structure**
+
+```text
+2582426---Christ-University-Smart-Door-Controller/
+├── data/                  # Sample datasets & static records
+├── demo/                  # GIF previews and demo videos
+├── src/                   # Core application source code
+│   ├── components/        # UI elements and helper scripts
+│   └── utils/             # Business logic & timing utility functions
+├── .gitignore             # Git ignore configuration
+├── LICENSE                # MIT License
+├── README.md              # Project documentation
+├── app.py                 # Main Streamlit dashboard application entry point
+└── requirements.txt       # Project dependencies
+```
+---
+
+## **Conclusion**
+
+The **Christ University AI Smart Door Controller** demonstrates a practical, scalable solution for modern campus management. By automating door access based on real-time class schedules and attendance windows, the system minimizes manual intervention, improves security monitoring, and delivers instant visibility across campus access points. 
+
+Future enhancements can integrate hardware-level RFID/biometric readers and advanced predictive analytics for automated campus flow management.
+
+
+
 ## **Live Application**
 
 The project is deployed and running live 24/7:
